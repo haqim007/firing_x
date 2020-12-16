@@ -33,6 +33,13 @@ func GetVictim(inp [8][8]string) ([7]string, error) {
 						}
 					}
 
+					if x+i < 8 && y+i < 8 {
+						if inp[x][y] == "x" && inp[x+i][y+i] == "x" {
+							res[y] = "(" + strconv.Itoa(x+1) + "," + strconv.Itoa(y+1) + ")"
+							inp[x+i][y+i] = ""
+						}
+					}
+
 				}
 			}
 		}
