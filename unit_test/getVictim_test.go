@@ -1,9 +1,11 @@
 package unit_test
 
 import "testing"
+import "errors"
 import mf "github.com/haqim007/chess/myfunctions"
 
 func TestGetVictim(t *testing.T) {
+	t.Log("\n GetVictim 1")
 	input := [8][8]string{
 		{"", "", "", "", "", "x", "x", ""},
 		{"x", "", "", "", "", "", "x", "x"},
@@ -27,5 +29,24 @@ func TestGetVictim(t *testing.T) {
 		if i == len(res)-1 && !check {
 			t.Errorf("Error : %s", err)
 		}
+	}
+	t.Log("\n GetVictim 2")
+	input2 := [8][8]string{
+		{"", "", "x", "", "", "", "", ""},
+		{"x", "", "", "", "", "", "", ""},
+		{"", "", "", "", "", "", "", ""},
+		{"", "x", "", "", "", "", "", ""},
+		{"", "", "", "", "", "", "", ""},
+		{"", "", "", "", "", "", "", ""},
+		{"", "", "", "", "", "", "", ""},
+		{"", "", "", "x", "", "", "", ""},
+	}
+	expectedError := errors.New("tidak ditemukan")
+
+	_, err2 := mf.GetVictim(input2)
+	if err2.Error() != expectedError.Error() {
+		t.Errorf("Expected Error : %s . What we got : %s", expectedError, err2)
+	} else {
+		t.Logf("Expected Error : %s . What we got : %s", expectedError, err2)
 	}
 }

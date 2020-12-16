@@ -44,8 +44,15 @@ func GetVictim(inp [8][8]string) ([7]string, error) {
 			}
 		}
 	}
-	if len(res) == 0 {
-		return [7]string{}, ErrVictimNotFound
+	check := false
+	for i := range res {
+		if res[i] != "" {
+			check = true
+		}
+
+		if i == len(res)-1 && !check {
+			return [7]string{}, ErrVictimNotFound
+		}
 	}
 	return res, nil
 }
