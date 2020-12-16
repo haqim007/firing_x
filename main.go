@@ -13,7 +13,9 @@ var (
 	// ErrInvalidInputFormat string
 	ErrInvalidInputFormat = errors.New("format koordinat yang dimasukkan salah. contoh: 2,3")
 	// ErrInvalidInputLength string
-	ErrInvalidInputLength = errors.New("batas minimal 1,1 dan maksimal koordinat yaitu 8,8. contoh: 2,3")
+	ErrInvalidInputLength = errors.New("batas minimal 1,1 dan maksimal koordinat yaitu 8,8")
+	// ErrVictimNotFound string
+	ErrVictimNotFound = errors.New("tidak ditemukan")
 )
 
 func chessBoard(input [8][8]string) {
@@ -56,7 +58,7 @@ func chessBoard(input [8][8]string) {
 			} else if j == 1 {
 				fmt.Printf("|  %s  |", input[j-1][7-i])
 			} else {
-				fmt.Printf("  %s  |", input[j-1][7-i])
+				fmt.Printf("  %s  |", input[j-1][7-i]) //7-i
 			}
 		}
 
@@ -106,6 +108,46 @@ func convertCoordinate(inp string) ([2]int, error) {
 	return res, nil
 }
 
+func getVictim(inp [8][8]string) ([7]string, error) {
+	var res [7]string
+	for x := 0; x < len(inp); x++ {
+		// fmt.Println(inp)
+		for y := 0; y < len(inp); y++ {
+			if inp[x][y] != "" {
+				for i := 1; i < len(inp)-1; i++ {
+					if x-i > 0 && y+i < 8 {
+						if inp[x][y] == "x" && inp[x-i][y+i] == "x" {
+							fmt.Println(x+1, ",", y+1, ",", inp[x-i][y+i])
+							res[y] = "(" + strconv.Itoa(x+1) + "," + strconv.Itoa(y+1) + ")"
+							inp[x-i][y+i] = ""
+						}
+					}
+
+					if y+i < 8 {
+						if inp[x][y] == "x" && inp[x][y+i] == "x" {
+							fmt.Println(x+1, ",", y+1, ",", inp[x][y+i])
+							res[y] = "(" + strconv.Itoa(x+1) + "," + strconv.Itoa(y+1) + ")"
+							inp[x][y+i] = ""
+						}
+					}
+
+					// if x+i < 8 && y+i < 8 {
+					// 	if inp[x+i][y+i] == "x" {
+					// 		fmt.Println(x+1, ",", y+1, ",", inp[x+i][y+i])
+					// 		res[y] = "(" + strconv.Itoa(x+1) + "," + strconv.Itoa(y+1) + ")"
+					// 		inp[x+i][y+i] = ""
+					// 	}
+					// }
+				}
+			}
+		}
+	}
+	if len(res) == 0 {
+		return [7]string{}, ErrVictimNotFound
+	}
+	return res, nil
+}
+
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("> Start ")
@@ -130,11 +172,7 @@ func main() {
 			if arrInputStr[0] == "exit" {
 				os.Exit(0)
 			}
-			// else{
 
-			// }
-
-			// inputArrStr := strings.Split(arrInputStr[0], ",")
 			isValid := validateCoordinate(arrInputStr[0])
 			if isValid != nil {
 				fmt.Println(isValid)
@@ -146,14 +184,22 @@ func main() {
 				fmt.Println(errRes)
 				os.Exit(0)
 			}
-			// text := strings.Split(arrInputStr[0], ",")
-			// for i := range text {
-			// 	text[i] = strings.TrimSpace(text[i])
-			// }
-			// fmt.Println(res[0], res[1])
+
 			arrInput[res[0]-1][res[1]-1] = "x"
-			// fmt.Println(arrInput)
+
 		}
+	}
+	resGetVictim, errGetVictim := getVictim(arrInput)
+	if errGetVictim != nil {
+		fmt.Println(errGetVictim)
+	} else {
+		fmt.Print("> Hasil: ")
+		for i := range resGetVictim {
+			if resGetVictim[i] != "" {
+				fmt.Print(resGetVictim[i], " ")
+			}
+		}
+		fmt.Print("\n")
 	}
 	chessBoard(arrInput)
 }
